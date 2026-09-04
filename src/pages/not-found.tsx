@@ -2,7 +2,7 @@ import { Link } from 'wouter';
 
 export default function NotFound() {
   return (
-    <main className="shell not-found-page">
+    <main id="main-content" className="shell not-found-page">
       <div className="eyebrow">404</div>
       <h1 className="display booking-title">
         Off the <span>court.</span>

@@ -2,6 +2,7 @@
 // No availability data exists — every slot in range is selectable; the
 // only constraint enforced here is the MAX_SLOTS cap from the domain layer.
 
+import { motion, useReducedMotion } from 'framer-motion';
 import { CircleDot, Target, Sunrise, Sun, Sunset, Moon, type LucideIcon } from 'lucide-react';
 import { formatMoney } from '../../lib/booking/pricing';
 import { canAddSlot, daypartSlots, formatFullDate, formatTime } from '../../lib/booking/slots';
@@ -44,10 +45,16 @@ export function SlotPicker({
   onSlotToggle,
 }: SlotPickerProps) {
   const canAdd = canAddSlot(picks);
+  const reduce = useReducedMotion();
+  const fadeIn = (delay: number) => (reduce ? {} : {
+    initial: { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.4, delay },
+  });
 
   return (
     <div>
-      <section className="booking-section">
+      <motion.section className="booking-section" {...fadeIn(0)}>
         <div className="booking-section-head">
           <h2 className="booking-section-title">Sport</h2>
         </div>
@@ -72,9 +79,9 @@ export function SlotPicker({
             );
           })}
         </div>
-      </section>
+      </motion.section>
 
-      <section className="booking-section">
+      <motion.section className="booking-section" {...fadeIn(0.08)}>
         <div className="booking-section-head">
           <h2 className="booking-section-title">Date</h2>
           <span className="booking-section-caption">Slots open 14 days ahead</span>
@@ -98,9 +105,9 @@ export function SlotPicker({
             );
           })}
         </div>
-      </section>
+      </motion.section>
 
-      <section className="booking-section">
+      <motion.section className="booking-section" {...fadeIn(0.16)}>
         <div className="booking-section-head">
           <h2 className="booking-section-title">{sport.courtWord}</h2>
         </div>
@@ -120,9 +127,9 @@ export function SlotPicker({
             );
           })}
         </div>
-      </section>
+      </motion.section>
 
-      <section className="booking-section">
+      <motion.section className="booking-section" {...fadeIn(0.24)}>
         <div className="booking-section-head">
           <h2 className="booking-section-title">Time</h2>
         </div>
@@ -172,7 +179,7 @@ export function SlotPicker({
             </div>
           );
         })}
-      </section>
+      </motion.section>
     </div>
   );
 }

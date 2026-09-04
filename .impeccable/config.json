@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "space grotesk",
+        "createdAt": "2026-09-03T12:08:22.792Z",
+        "reason": "Baked into the source Claude Design artboard (Home Clay and Bone) the user selected and approved as the site's Clay & Bone direction; used only for secondary uppercase labels/buttons/nav alongside the distinctive Anton display face, not as the site's primary typeface. Reviewed in this session's own design audit and confirmed as a strength, not a generic default."
+      }
+    ]
+  }
+}

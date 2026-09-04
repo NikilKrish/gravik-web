@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearch } from 'wouter';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { ReviewStep } from '../components/booking/ReviewStep';
 import { RequestSent } from '../components/booking/RequestSent';
@@ -24,6 +25,7 @@ function resolveSport(search: string): SportId {
 export default function Booking() {
   const search = useSearch();
   const initialSport = useMemo(() => resolveSport(search), [search]);
+  const reduce = useReducedMotion();
 
   const [sport, setSport] = useState<SportId>(initialSport);
   const [courtIndex, setCourtIndex] = useState(0);
@@ -104,6 +106,7 @@ export default function Booking() {
 
   return (
     <main
+      id="main-content"
       className={`shell booking-page${showMobileCta ? ' has-mobile-cta' : ''}`}
       data-testid="page-booking"
     >
@@ -122,12 +125,17 @@ export default function Booking() {
 
       {effectiveStep === 'slots' ? (
         <>
-          <header className="booking-header">
+          <motion.header
+            className="booking-header"
+            initial={reduce ? false : { opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
             <div className="eyebrow">Book a court</div>
             <h1 className="display booking-title">
               Pick your <span>slot.</span>
             </h1>
-          </header>
+          </motion.header>
           <div className="booking-layout">
             <SlotPicker
               sport={sportData}

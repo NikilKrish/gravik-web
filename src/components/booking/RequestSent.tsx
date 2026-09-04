@@ -2,6 +2,7 @@
 // booking is confirmed. Nothing here may claim payment or a secured court —
 // a human at GRAVIK still has to confirm on WhatsApp.
 
+import { motion, useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { Link } from 'wouter';
 import { ADDONS } from '../../lib/booking/catalog';
@@ -37,21 +38,32 @@ export function RequestSent({
   const selectedAddons = addonIds
     .map((id) => ADDONS.find((a) => a.id === id))
     .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
+  const reduce = useReducedMotion();
+  const fadeIn = (delay: number) => (reduce ? {} : {
+    initial: { opacity: 0, y: 14 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.4, delay },
+  });
 
   return (
     <div className="request-sent">
-      <div className="request-sent-icon">
+      <motion.div
+        className="request-sent-icon"
+        initial={reduce ? false : { opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+      >
         <Check size={28} strokeWidth={2.25} />
-      </div>
-      <div className="eyebrow request-sent-eyebrow">Request sent</div>
-      <h1 className="display booking-title request-sent-title">
+      </motion.div>
+      <motion.div className="eyebrow request-sent-eyebrow" {...fadeIn(0.12)}>Request sent</motion.div>
+      <motion.h1 className="display booking-title request-sent-title" {...fadeIn(0.18)}>
         Almost <span>there.</span>
-      </h1>
-      <p className="request-sent-body">
+      </motion.h1>
+      <motion.p className="request-sent-body" {...fadeIn(0.24)}>
         Your request is on its way to us on WhatsApp. We'll confirm your court and time there.
-      </p>
+      </motion.p>
 
-      <div className="request-sent-card">
+      <motion.div className="request-sent-card" {...fadeIn(0.32)}>
         <div className="request-sent-chip">Awaiting confirmation</div>
         <BookingFields sport={sport} day={day} courtName={courtName} players={players} />
 
@@ -80,9 +92,9 @@ export function RequestSent({
             <span>{formatMoney(totals.total)}</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="request-sent-actions">
+      <motion.div className="request-sent-actions" {...fadeIn(0.4)}>
         <button
           type="button"
           className="button bone"
@@ -93,7 +105,7 @@ export function RequestSent({
         <Link href="/" className="button">
           Back home
         </Link>
-      </div>
+      </motion.div>
     </div>
   );
 }

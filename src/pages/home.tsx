@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, ChevronRight, Menu, Phone, X, MapPin, Instagram, Mail, ShieldCheck, Trophy, Clock, Users, Coffee, Car, Lightbulb } from 'lucide-react';
+import { ArrowRight, ChevronRight, Menu, Phone, X, MapPin, Instagram, Mail, Award, ShieldCheck, Trophy, Clock, Users, GraduationCap, Shirt, Coffee, Car, Lightbulb } from 'lucide-react';
 import { hasOpened, OPENING_LABEL } from '../lib/opening';
 
 const benefits = [
-  { icon: ShieldCheck, title: 'Quality Courts', desc: 'Well-maintained playing experience' },
-  { icon: Users, title: 'Coaching', desc: 'Learn, improve & elevate your game' },
+  { icon: Award, title: 'Quality Courts', desc: 'Well-maintained playing experience' },
+  { icon: GraduationCap, title: 'Coaching', desc: 'Learn, improve & elevate your game' },
   { icon: Trophy, title: 'Tournaments', desc: 'Compete, challenge & level up' },
   { icon: Users, title: 'Open Play', desc: 'Meet players. Build your game. Have fun.' },
   { icon: Clock, title: 'Open Daily', desc: 'Seven days a week' },
   { icon: ShieldCheck, title: 'Safe & Secured', desc: 'CCTV surveillance & security' },
   { icon: Car, title: 'Ample Parking', desc: 'Hassle-free parking space' },
   { icon: Coffee, title: 'Drinking Water', desc: 'Stay hydrated always' },
-  { icon: Users, title: 'Changing Rooms', desc: 'Clean & comfortable facilities' },
+  { icon: Shirt, title: 'Changing Rooms', desc: 'Clean & comfortable facilities' },
   { icon: Lightbulb, title: 'Premium Lighting', desc: 'Best play day or night' },
 ];
 
@@ -43,7 +43,7 @@ export function Home() {
   };
 
   return (
-    <main data-testid="page-home">
+    <main id="main-content" data-testid="page-home">
       <header className="shell sticky top-0 z-50 bg-[#14120F]/92 backdrop-blur-md">
         <nav className="nav" data-testid="navigation-main">
           <a href="#top" className="brand" data-testid="link-brand" onClick={() => setMenu(false)}>
@@ -170,7 +170,7 @@ export function Home() {
         <div className="benefits-grid">
           {benefits.map((b, i) => (
             <motion.div key={b.title} className="benefit-card" {...reveal} transition={{ delay: i * 0.05 }}>
-              <b.icon className="benefit-icon" strokeWidth={1.5} size={40} />
+              <b.icon className="benefit-icon" size={40} />
               <div>
                 <h4 className="benefit-title">{b.title}</h4>
                 <p style={{ font: '500 13px/1.5 Manrope, sans-serif', color: 'var(--dim)', marginTop: 8 }}>{b.desc}</p>
@@ -248,7 +248,11 @@ export function Home() {
           </div>
 
           <div className="footer-bottom">
-            <span>© 2026 GRAVIK. All rights reserved.</span>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+              <span>© 2026 GRAVIK. All rights reserved.</span>
+              <Link href="/privacy" className="footer-legal-link">Privacy</Link>
+              <Link href="/terms" className="footer-legal-link">Terms</Link>
+            </div>
             <div className="partners">
               <span>We are also on:</span>
               <b>TURFTOWN</b>

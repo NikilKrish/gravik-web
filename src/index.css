@@ -26,7 +26,10 @@ button { font: inherit; color: inherit; }
 
 *:focus-visible { outline: 3px solid var(--bone); outline-offset: 2px; }
 
-.display { font-family: Anton, sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: .005em; line-height: .88; }
+.skip-link { position: absolute; top: -60px; left: 12px; z-index: 100; background: var(--clay); color: var(--bg); padding: 12px 20px; font: 700 12px 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: .05em; transition: top .2s; }
+.skip-link:focus { top: 12px; }
+
+.display { font-family: Anton, sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: .005em; line-height: .88; text-wrap: balance; }
 .mono { font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
 
 .shell { max-width: 1280px; margin: auto; padding: 0 36px; }
@@ -100,7 +103,8 @@ button { font: inherit; color: inherit; }
 .map-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); }
 .qr-code { width: 200px; height: 200px; background: #fff; border: 4px solid var(--clay); padding: 10px; margin-bottom: 20px; }
 
-.footer { background: #000; padding: 80px 0 40px; border-top: 4px solid var(--clay); }
+.footer { background: var(--bg); padding: 80px 0 40px; border-top: 4px solid var(--clay); }
+.footer-legal-link:hover { color: var(--clay); }
 .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
 .footer-brand img { height: 60px; margin-bottom: 24px; object-fit: contain; }
 .footer-slogan { font: 700 16px 'Space Grotesk', sans-serif; color: var(--bone); text-transform: uppercase; letter-spacing: 0.1em; }
@@ -229,7 +233,7 @@ button { font: inherit; color: inherit; }
 .summary-session-remove:hover { border-color: var(--clay); color: var(--clay); }
 
 .summary-totals { border-top: 1px dashed var(--neo-border); padding-top: 18px; display: flex; flex-direction: column; gap: 8px; }
-.summary-row { display: flex; justify-content: space-between; align-items: center; font: 500 14px Manrope, sans-serif; color: var(--muted); }
+.summary-row { display: flex; justify-content: space-between; align-items: center; font: 500 14px Manrope, sans-serif; color: var(--muted); font-variant-numeric: tabular-nums; }
 .summary-row.savings { color: var(--clay); font-weight: 600; }
 .summary-row.total { font: 700 18px 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: .03em; color: var(--ink); padding-top: 6px; }
 
@@ -274,7 +278,7 @@ button { font: inherit; color: inherit; }
 .payment-pick:hover { border-color: var(--bone); }
 .payment-pick[aria-pressed="true"] { border-color: var(--clay); background: var(--bg-light); box-shadow: 4px 4px 0 var(--clay); }
 .payment-pick-name { font: 700 13px 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: .04em; color: var(--ink); }
-.payment-pick-amount { font: 400 26px Anton, sans-serif; color: var(--bone); }
+.payment-pick-amount { font: 400 26px Anton, sans-serif; color: var(--bone); font-variant-numeric: tabular-nums; }
 .payment-pick-note { font: 500 12px Manrope, sans-serif; color: var(--muted); }
 
 /* Player stepper */
@@ -282,7 +286,7 @@ button { font: inherit; color: inherit; }
 .stepper-btn { display: grid; place-items: center; width: 40px; height: 40px; border: 2px solid var(--neo-border); background: var(--bg-off); color: var(--ink); cursor: pointer; transition: border-color .18s, color .18s; }
 .stepper-btn:hover:not(:disabled) { border-color: var(--clay); color: var(--clay); }
 .stepper-btn:disabled { opacity: .35; cursor: not-allowed; }
-.stepper-value { font: 400 32px Anton, sans-serif; color: var(--ink); min-width: 36px; text-align: center; }
+.stepper-value { font: 400 32px Anton, sans-serif; color: var(--ink); min-width: 36px; text-align: center; font-variant-numeric: tabular-nums; }
 
 /* Request sent */
 .request-sent { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 20px; }
@@ -308,7 +312,7 @@ button { font: inherit; color: inherit; }
   .booking-mobile-cta { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px; background: var(--bg); border-top: 2px solid var(--neo-border); }
   .booking-mobile-cta-total { display: flex; flex-direction: column; }
   .booking-mobile-cta-label { font: 600 10px 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  .booking-mobile-cta-amount { font: 700 20px 'Space Grotesk', sans-serif; color: var(--ink); }
+  .booking-mobile-cta-amount { font: 700 20px 'Space Grotesk', sans-serif; color: var(--ink); font-variant-numeric: tabular-nums; }
   .booking-mobile-cta .button { flex: 0 0 auto; }
 }
 

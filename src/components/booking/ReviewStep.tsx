@@ -3,6 +3,7 @@
 // backend — the CTA opens WhatsApp with a pre-filled request; nothing here
 // may imply payment has been taken or a court has been secured.
 
+import { motion, useReducedMotion } from 'framer-motion';
 import { GraduationCap, Circle, Minus, Plus, Swords, type LucideIcon } from 'lucide-react';
 import { ADDONS } from '../../lib/booking/catalog';
 import { formatMoney } from '../../lib/booking/pricing';
@@ -50,16 +51,22 @@ export function ReviewStep({
   onSend,
 }: ReviewStepProps) {
   const sessions = mergeSessions(picks);
+  const reduce = useReducedMotion();
+  const fadeIn = (delay: number) => (reduce ? {} : {
+    initial: { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.4, delay },
+  });
 
   return (
     <>
-      <h1 className="display booking-title review-title">
+      <motion.h1 className="display booking-title review-title" {...fadeIn(0)}>
         Review your <span>request.</span>
-      </h1>
+      </motion.h1>
 
       <div className="booking-layout">
         <div>
-          <section className="booking-section">
+          <motion.section className="booking-section" {...fadeIn(0.06)}>
             <div className="booking-section-head">
               <h2 className="booking-section-title">Booking summary</h2>
             </div>
@@ -79,9 +86,9 @@ export function ReviewStep({
                 })}
               </div>
             </div>
-          </section>
+          </motion.section>
 
-          <section className="booking-section">
+          <motion.section className="booking-section" {...fadeIn(0.13)}>
             <div className="booking-section-head">
               <h2 className="booking-section-title">Add-ons</h2>
             </div>
@@ -109,9 +116,9 @@ export function ReviewStep({
                 );
               })}
             </div>
-          </section>
+          </motion.section>
 
-          <section className="booking-section">
+          <motion.section className="booking-section" {...fadeIn(0.2)}>
             <div className="booking-section-head">
               <h2 className="booking-section-title">Payment preference</h2>
             </div>
@@ -140,9 +147,9 @@ export function ReviewStep({
                 </span>
               </button>
             </div>
-          </section>
+          </motion.section>
 
-          <section className="booking-section">
+          <motion.section className="booking-section" {...fadeIn(0.27)}>
             <div className="booking-section-head">
               <h2 className="booking-section-title">Who's playing</h2>
             </div>
@@ -168,10 +175,12 @@ export function ReviewStep({
               </button>
             </div>
             <div className="review-note">Player count helps us set up the court.</div>
-          </section>
+          </motion.section>
         </div>
 
-        <ReviewBill totals={totals} addonIds={addonIds} onSend={onSend} />
+        <motion.div {...fadeIn(0.1)}>
+          <ReviewBill totals={totals} addonIds={addonIds} onSend={onSend} />
+        </motion.div>
       </div>
     </>
   );
