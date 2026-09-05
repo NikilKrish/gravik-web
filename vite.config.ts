@@ -23,9 +23,13 @@ export default defineConfig({
     port,
     strictPort: true,
     host: '0.0.0.0',
+    // Dev servers run behind a proxy (remote containers, tunnels, preview
+    // panels) that forwards a generated hostname, which Vite blocks by default.
+    allowedHosts: true,
   },
   preview: {
     port,
     host: '0.0.0.0',
+    allowedHosts: true,
   },
 });
