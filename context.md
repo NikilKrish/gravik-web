@@ -9,8 +9,8 @@ A real pickleball + cricket-nets facility opening **6 Sept 2026** in Ambattur, C
 ₹750/hr flat) and Cricket Nets (1 net with bowling machine, ₹500/hr flat). No peak
 pricing — that was a deliberate product decision, not an oversight.
 
-Owner: Nikil Krishnan (nikil.june25@gmail.com). Contact numbers +91 6385 515521 /
-515531, gravik0523@gmail.com, @gravikpadel on Instagram. Also listed on Turftown and
+Owner: Nikil Krishnan (nikil.june25@gmail.com). Contact numbers +91 91502 93767 /
++91 8072 919 632, gravik0523@gmail.com, @gravikpadel on Instagram. Also listed on Turftown and
 Playo (third-party booking platforms).
 
 ## The three local folders — what each one is
@@ -49,7 +49,7 @@ neo-brutalist hard-shadow language, don't soften it. Breakpoints: 768px (nav/gri
 **The booking flow, and why it has no backend:** GRAVIK has no reservation system.
 The flow is sport → date → court → time (max 4 one-hour slots, `MAX_SLOTS` in
 `src/lib/booking/catalog.ts`) → add-ons → payment preference → player count → a
-pre-filled **WhatsApp message** (`wa.me/916385515521`) that the user sends. A human
+pre-filled **WhatsApp message** (`wa.me/919150293767`) that the user sends. A human
 at GRAVIK confirms manually. Because of this:
 - **All slots are always available.** There is no availability data and none should
   ever be invented (no random "booked" slots, no fake scarcity).

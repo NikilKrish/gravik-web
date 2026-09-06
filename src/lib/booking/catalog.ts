@@ -8,7 +8,7 @@ export const SLOT_MINUTES = 60;
 export const MAX_SLOTS = 4;
 export const OPEN_FROM = 6 * 60;
 export const OPEN_TO = 24 * 60;
-export const WHATSAPP_NUMBER = '916385515521';
+export const WHATSAPP_NUMBER = '919150293767';
 
 export const SPORTS: Sport[] = [
   {

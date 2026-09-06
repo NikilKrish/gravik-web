@@ -253,7 +253,7 @@ export function Home() {
               <a href="https://maps.google.com/?q=Plot+No.+28,+VGN+Victoria+Park,+Enford+Street,+Ambattur,+Chennai" target="_blank" rel="noreferrer" className="button clay">
                 <MapPin size={16} /> Get Directions
               </a>
-              <a href="tel:+916385515521" className="button">
+              <a href="tel:+919150293767" className="button">
                 <Phone size={16} /> Call Us
               </a>
             </div>
@@ -292,8 +292,8 @@ export function Home() {
             <div>
               <h4>Contact Us</h4>
               <div className="footer-links">
-                <a href="tel:+916385515521" className="flex"><Phone size={16} /> +91 6385 515521</a>
-                <a href="tel:+916385515531" className="flex"><Phone size={16} /> +91 6385 515531</a>
+                <a href="tel:+919150293767" className="flex"><Phone size={16} /> +91 91502 93767</a>
+                <a href="tel:+918072919632" className="flex"><Phone size={16} /> +91 8072 919 632</a>
                 <a href="mailto:gravik0523@gmail.com" className="flex"><Mail size={16} /> gravik0523@gmail.com</a>
                 <a href="https://instagram.com/gravikpadel" target="_blank" rel="noreferrer" className="flex" style={{ color: 'var(--bone)' }}><Instagram size={16} /> @gravikpadel</a>
               </div>
