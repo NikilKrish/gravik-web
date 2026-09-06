@@ -8,3 +8,4 @@ dist/
 
 # Local design-lint session cache (absolute paths, session ids)
 .impeccable/hook.cache.json
+.verify/

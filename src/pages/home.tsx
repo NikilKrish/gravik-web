@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FocusEvent, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type FocusEvent, type MouseEvent } from 'react';
 import { Link } from 'wouter';
 import { MaskedText, Reveal, Stagger, StaggerItem } from '@/components/motion';
 import { CourtField } from '@/components/motion/CourtField';
@@ -11,6 +11,13 @@ import { hasOpened, OPENING_LABEL } from '../lib/opening';
 // code can never drift from the links beside it.
 const MAPS_URL =
   'https://maps.google.com/?q=Plot+No.+28,+VGN+Victoria+Park,+Enford+Street,+Ambattur,+Chennai';
+
+const navItems = [
+  { id: 'sports', label: 'Sports' },
+  { id: 'facilities', label: 'Facilities' },
+  { id: 'visit', label: 'Location' },
+  { id: 'contact', label: 'Contact' },
+] as const;
 
 const benefits = [
   { icon: Award, title: 'Quality Courts', desc: 'Well-maintained playing experience' },
@@ -32,7 +39,67 @@ export function Home() {
   const header = useRef<HTMLElement>(null);
   const navLinks = useRef<HTMLDivElement>(null);
   const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 768px)').matches);
+  const [stuck, setStuck] = useState(false);
+  const [active, setActive] = useState('');
+  const sentinel = useRef<HTMLDivElement>(null);
+  const rail = useRef<HTMLSpanElement>(null);
   const opened = hasOpened();
+
+  // A sentinel at the top of the document tells us the header has left the
+  // flow, without a scroll listener. Drives the condensed glass treatment.
+  useEffect(() => {
+    const node = sentinel.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => setStuck(!entry.isIntersecting));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  // Scroll spy: whichever section crosses the middle band of the viewport is
+  // the current one. Ties resolve in document order so the nav never flickers
+  // between two sections that both qualify.
+  useEffect(() => {
+    const targets = navItems
+      .map((item) => document.getElementById(item.id))
+      .filter((node): node is HTMLElement => Boolean(node));
+    if (!targets.length) return;
+    const visible = new Set<string>();
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) visible.add(entry.target.id);
+        else visible.delete(entry.target.id);
+      }
+      setActive(navItems.find((item) => visible.has(item.id))?.id ?? '');
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, []);
+
+  // One rail slides between links rather than each link owning a border, so
+  // the indicator animates as a single transform. Measured, because label
+  // widths depend on a webfont that lands after first paint.
+  useLayoutEffect(() => {
+    const container = navLinks.current;
+    const railEl = rail.current;
+    if (!container || !railEl) return;
+    const place = () => {
+      const link = active ? container.querySelector<HTMLAnchorElement>(`a[data-nav="${active}"]`) : null;
+      if (!link || mobile) {
+        container.removeAttribute('data-rail');
+        return;
+      }
+      const bounds = container.getBoundingClientRect();
+      const target = link.getBoundingClientRect();
+      railEl.style.setProperty('--rail-x', `${target.left - bounds.left}px`);
+      railEl.style.setProperty('--rail-w', `${target.width}`);
+      container.setAttribute('data-rail', 'on');
+    };
+    place();
+    const resize = new ResizeObserver(place);
+    resize.observe(container);
+    document.fonts?.ready.then(place).catch(() => {});
+    return () => resize.disconnect();
+  }, [active, mobile]);
 
   useEffect(() => {
     document.title = 'GRAVIK | Play. Compete. Connect. | Chennai';
@@ -108,17 +175,28 @@ export function Home() {
 
   return (
     <main id="main-content" className="home-page" tabIndex={-1} data-testid="page-home" onFocusCapture={settleFocus}>
-      <header ref={header} className="home-header shell" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setMenu(false); }}>
-        <nav className="nav" aria-label="Main navigation" data-testid="navigation-main">
+      <div ref={sentinel} className="nav-sentinel" aria-hidden="true" />
+      <header ref={header} className="home-header" data-scrolled={stuck ? 'true' : undefined} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setMenu(false); }}>
+        <nav className="nav shell" aria-label="Main navigation" data-testid="navigation-main">
           <a href="#top" className="brand" data-testid="link-brand" onClick={(event) => nav(event, 'top')}>
             <img src="/brand/gravik-logo-panel.webp" alt="GRAVIK Logo" width={610} height={265} fetchPriority="high" decoding="async" />
           </a>
 
           <div ref={navLinks} id="home-navigation-links" className={`nav-links ${menu ? 'open' : ''}`} inert={mobile && !menu}>
-            <a href="#sports" data-testid="link-sports" onClick={(event) => nav(event, 'sports')}>Sports</a>
-            <a href="#facilities" data-testid="link-facilities" onClick={(event) => nav(event, 'facilities')}>Facilities</a>
-            <a href="#visit" data-testid="link-visit" onClick={(event) => nav(event, 'visit')}>Location</a>
-            <a href="#contact" data-testid="link-contact" onClick={(event) => nav(event, 'contact')}>Contact</a>
+            {navItems.map((item, index) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                data-nav={item.id}
+                data-testid={`link-${item.id}`}
+                aria-current={active === item.id ? 'true' : undefined}
+                style={{ '--nav-index': index } as CSSProperties}
+                onClick={(event) => nav(event, item.id)}
+              >
+                {item.label}
+              </a>
+            ))}
+            <span ref={rail} className="nav-rail" aria-hidden="true" />
           </div>
 
           <div className="nav-tools">
