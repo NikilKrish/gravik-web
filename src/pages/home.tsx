@@ -252,7 +252,7 @@ export function Home() {
       <section id="sports" className="section shell" tabIndex={-1}>
         <Reveal data-home-reveal distance={32}>
           <div className="eyebrow">Choose your game</div>
-          <h2 className="display" style={{ fontSize: 'clamp(50px, 8vw, 100px)', margin: 0 }}>Train Hard.<br/>Play Smart.</h2>
+          <h2 className="display section-heading">Train Hard.<br/>Play Smart.</h2>
         </Reveal>
 
         <Stagger className="sports-grid" data-home-reveal interval={0.08}>
@@ -262,11 +262,11 @@ export function Home() {
             <div className="sport-content">
               <div className="sport-slogan">Rally. Smash. Repeat.</div>
               <h3 className="display sport-title">Pickleball</h3>
-              <p style={{ color: 'var(--muted)', font: '500 16px/1.5 Manrope, sans-serif' }}>Premium courts. Court price per hour.</p>
+              <p className="sport-desc">Premium courts. Court price per hour.</p>
 
               <div className="sport-pricing">
                 <div>
-                  <div style={{ font: '700 12px \'Space Grotesk\', sans-serif', color: 'var(--clay)', textTransform: 'uppercase', marginBottom: 4 }}>*Limited Time Offer</div>
+                  <div className="sport-offer-label">*Limited Time Offer</div>
                   <span className="old-price">₹1000</span>
                 </div>
                 <div>
@@ -274,7 +274,7 @@ export function Home() {
                 </div>
               </div>
 
-              <Link className="button clay" href="/book?sport=pickleball" data-testid="link-book-pickleball" style={{ marginTop: 24, width: '100%' }}>
+              <Link className="button clay sport-cta" href="/book?sport=pickleball" data-testid="link-book-pickleball">
                 Check availability <ArrowRight size={14} />
               </Link>
             </div>
@@ -286,11 +286,11 @@ export function Home() {
             <div className="sport-content">
               <div className="sport-slogan">Focus. Practice. Perform.</div>
               <h3 className="display sport-title">Cricket Nets</h3>
-              <p style={{ color: 'var(--muted)', font: '500 16px/1.5 Manrope, sans-serif' }}>Single net with bowling machine.</p>
+              <p className="sport-desc">Single net with bowling machine.</p>
 
               <div className="sport-pricing">
                 <div>
-                  <div style={{ font: '700 12px \'Space Grotesk\', sans-serif', color: 'var(--clay)', textTransform: 'uppercase', marginBottom: 4 }}>*Limited Time Offer</div>
+                  <div className="sport-offer-label">*Limited Time Offer</div>
                   <span className="old-price">₹750</span>
                 </div>
                 <div>
@@ -298,7 +298,7 @@ export function Home() {
                 </div>
               </div>
 
-              <Link className="button clay" href="/book?sport=cricket" data-testid="link-book-cricket" style={{ marginTop: 24, width: '100%' }}>
+              <Link className="button clay sport-cta" href="/book?sport=cricket" data-testid="link-book-cricket">
                 Check availability <ArrowRight size={14} />
               </Link>
             </div>
@@ -307,9 +307,9 @@ export function Home() {
       </section>
 
       <section id="facilities" className="section shell" tabIndex={-1}>
-        <Reveal data-home-reveal distance={8} style={{ textAlign: 'center' }}>
-          <div className="eyebrow" style={{ justifyContent: 'center' }}>Premium Experience</div>
-          <h2 className="display" style={{ fontSize: 'clamp(50px, 8vw, 90px)', margin: '10px 0 20px' }}>Built for the players</h2>
+        <Reveal data-home-reveal distance={8} className="facilities-intro">
+          <div className="eyebrow eyebrow-center">Premium Experience</div>
+          <h2 className="display section-heading facilities-heading">Built for the players</h2>
         </Reveal>
 
         <Reveal data-home-reveal distance={8} className="benefits-grid">
@@ -318,7 +318,7 @@ export function Home() {
               <b.icon className="benefit-icon" />
               <div>
                 <h4 className="benefit-title">{b.title}</h4>
-                <p style={{ font: '500 13px/1.5 Manrope, sans-serif', color: 'var(--dim)', marginTop: 8 }}>{b.desc}</p>
+                <p className="benefit-desc">{b.desc}</p>
               </div>
             </div>
           ))}
@@ -333,7 +333,7 @@ export function Home() {
             <p className="visit-address">
               Plot No. 28, VGN Victoria Park, Enford Street,<br/>Ambattur, Chennai – 600 053
             </p>
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <div className="visit-actions">
               <a href={MAPS_URL} target="_blank" rel="noreferrer" className="button clay">
                 <MapPin size={16} /> Get Directions
               </a>
@@ -365,7 +365,7 @@ export function Home() {
                 <img src="/brand/gravik-logo-panel.webp" alt="GRAVIK" width={610} height={265} loading="lazy" decoding="async" />
               </div>
               <div className="footer-slogan">Play. Compete. Connect.</div>
-              <p style={{ color: 'var(--dim)', marginTop: 16, font: '500 14px/1.6 Manrope, sans-serif', maxWidth: 300 }}>
+              <p className="footer-desc">
                 Chennai's new destination for Pickleball and Cricket Practice. Open daily.
               </p>
             </div>
@@ -376,29 +376,29 @@ export function Home() {
                 <a href="tel:+919150293767" className="flex"><Phone size={16} /> +91 91502 93767</a>
                 <a href="tel:+918072919632" className="flex"><Phone size={16} /> +91 8072 919 632</a>
                 <a href="mailto:gravik0523@gmail.com" className="flex"><Mail size={16} /> gravik0523@gmail.com</a>
-                <a href="https://instagram.com/gravikpadel" target="_blank" rel="noreferrer" className="flex" style={{ color: 'var(--bone)' }}><Instagram size={16} /> @gravikpadel</a>
+                <a href="https://instagram.com/gravikpadel" target="_blank" rel="noreferrer" className="flex footer-social"><Instagram size={16} /> @gravikpadel</a>
               </div>
             </div>
 
             <div>
               <h4>Location</h4>
               <div className="footer-links">
-                <span style={{ lineHeight: 1.6 }}>Plot No. 28, VGN Victoria Park,<br/>Enford Street, Ambattur,<br/>Chennai – 600 053</span>
-                <a href={MAPS_URL} target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'var(--clay)', marginTop: 8 }}>Open in Maps</a>
+                <span className="footer-address">Plot No. 28, VGN Victoria Park,<br/>Enford Street, Ambattur,<br/>Chennai – 600 053</span>
+                <a href={MAPS_URL} target="_blank" rel="noreferrer" className="footer-map-link">Open in Maps</a>
               </div>
             </div>
           </div>
 
           <div className="footer-bottom">
-            <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="footer-bottom-legal">
               <span>© {new Date().getFullYear()} GRAVIK. All rights reserved.</span>
               <Link href="/privacy" className="footer-legal-link">Privacy</Link>
               <Link href="/terms" className="footer-legal-link">Terms</Link>
             </div>
             <div className="partners">
               <span>We are also on:</span>
-              <b>TURFTOWN</b>
-              <b>PLAYO</b>
+              <a href="https://turftown.in/" target="_blank" rel="noreferrer">TURFTOWN</a>
+              <a href="https://playo.co/" target="_blank" rel="noreferrer">PLAYO</a>
             </div>
           </div>
         </div>

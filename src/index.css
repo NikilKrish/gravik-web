@@ -18,6 +18,8 @@
   --motion-ease-standard: cubic-bezier(.22, 1, .36, 1);
   --motion-distance: 18px;
   --nav-h: 80px;
+  --space-section: 112px;
+  --space-section-tight: 88px;
 }
 
 * { box-sizing: border-box; }
@@ -40,6 +42,9 @@ button { font: inherit; color: inherit; }
 .skip-link:focus { top: 12px; }
 
 .display { font-family: Anton, sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: .005em; line-height: .88; text-wrap: balance; }
+/* Anton is a condensed face: at display sizes the default tracking opens the
+   word up and it reads loose. Only the large settings are corrected. */
+.hero h1, .section-heading, .visit-title, .sport-title, .booking-title, .request-sent-title { letter-spacing: -.012em; }
 .mono { font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
 
 .shell { max-width: 1280px; margin: auto; padding: 0 36px; }
@@ -86,37 +91,39 @@ button { font: inherit; color: inherit; }
 .ticker { overflow: hidden; background: var(--clay); color: var(--bg); border-top: 2px solid #000; border-bottom: 2px solid #000; transform: rotate(-1deg); margin: 40px 0; box-shadow: 0 10px 30px rgba(217, 96, 58, 0.2); }
 .ticker-inner { width: max-content; display: flex; gap: 30px; align-items: center; padding: 16px 0; animation: tick 20s linear infinite; font: 400 32px Anton, sans-serif; letter-spacing: .08em; }
 .ticker-inner span { display: flex; align-items: center; gap: 30px; }
+.ticker:hover .ticker-inner, .ticker:focus-within .ticker-inner { animation-play-state: paused; }
 .ticker-inner b { color: var(--bg); font-size: 20px; }
 @keyframes tick { to { transform: translateX(-50%); } }
 @keyframes nav-menu-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes nav-item-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 @keyframes nav-icon-in { from { opacity: 0; transform: rotate(-45deg) scale(.7); } to { opacity: 1; transform: none; } }
 
-.section { padding-top: 120px; padding-bottom: 120px; border-bottom: 1px solid var(--neo-border); }
+.section { padding-top: var(--space-section); padding-bottom: var(--space-section); border-bottom: 1px solid var(--neo-border); }
 .section, .visit, .footer { scroll-margin-top: calc(var(--nav-h) + 24px); }
 .eyebrow { font: 700 12px 'Space Grotesk', sans-serif; letter-spacing: .15em; display: flex; gap: 12px; align-items: center; text-transform: uppercase; color: var(--bone); margin-bottom: 20px; }
 .eyebrow:before { content: ""; width: 12px; height: 12px; background: var(--clay); }
 
 .sports-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 60px; }
-.sport-card { background: var(--bg-off); border: 2px solid var(--neo-border); overflow: hidden; position: relative; display: flex; flex-direction: column; transition: border-color 0.3s; }
-.sport-card:hover { border-color: var(--clay); }
+.sport-card { background: var(--bg-off); border: 2px solid var(--neo-border); overflow: hidden; position: relative; display: flex; flex-direction: column; transition: border-color .3s, transform .3s var(--motion-ease-standard), box-shadow .3s var(--motion-ease-standard); }
+.sport-card:hover { border-color: var(--clay); transform: translate(-4px, -4px); box-shadow: 8px 8px 0 var(--neo-border); }
+.sport-card .sport-img { transition: transform .5s var(--motion-ease-standard), filter .3s; }
+.sport-card:hover .sport-img { transform: scale(1.04); filter: contrast(1.1) brightness(1); }
 .sport-img { width: 100%; height: 400px; object-fit: cover; filter: contrast(1.1) brightness(0.9); border-bottom: 2px solid var(--neo-border); }
 .sport-content { padding: 40px; flex-grow: 1; display: flex; flex-direction: column; }
 .sport-title { font-size: 64px; margin: 0 0 10px; color: var(--ink); }
 .sport-slogan { font: 700 16px 'Space Grotesk', sans-serif; color: var(--clay); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; }
-.sport-pricing { margin-top: auto; border-top: 1px dashed var(--neo-border); padding-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+.sport-pricing { margin-top: auto; border-top: 1px dashed var(--neo-border); padding-top: 20px; display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; align-items: last baseline; }
 .sport-pricing .old-price { text-decoration: line-through; color: var(--dim); font-size: 24px; font-family: Anton, sans-serif; }
-.sport-pricing .new-price { font-size: 64px; color: var(--bone); line-height: 0.8; font-family: Anton, sans-serif; }
+.sport-pricing .new-price { font-size: 64px; color: var(--bone); line-height: 1; font-family: Anton, sans-serif; }
 .sport-pricing .unit { font: 700 14px 'Space Grotesk', sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-left: 8px; }
 
-.benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-top: 60px; }
-.benefit-card { padding: 30px 24px; border: 1px solid var(--neo-border); background: var(--bg-off); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; transition: transform 0.2s, border-color 0.2s; }
-.benefit-card:hover { transform: translateY(-5px); border-color: var(--bone); }
+.benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; margin-top: 60px; border-top: 1px solid var(--neo-border); border-left: 1px solid var(--neo-border); }
+.benefit-card { padding-top: 36px; padding-bottom: 36px; padding-left: 24px; padding-right: 24px; border-right: 1px solid var(--neo-border); border-bottom: 1px solid var(--neo-border); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .benefit-icon { width: 48px; height: 48px; color: var(--clay); }
 .benefit-title { font: 700 14px 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; }
 
 .visit { display: grid; grid-template-columns: 1fr 1fr; min-height: 600px; border-bottom: 1px solid var(--neo-border); }
-.visit-text { padding: 100px max(36px, calc((100vw - 1280px)/2 + 36px)); display: flex; flex-direction: column; justify-content: center; }
+.visit-text { padding-top: var(--space-section); padding-bottom: var(--space-section); padding-left: max(36px, calc((100vw - 1280px)/2 + 36px)); padding-right: max(36px, calc((100vw - 1280px)/2 + 36px)); display: flex; flex-direction: column; justify-content: center; }
 .visit-title { font-size: clamp(50px, 7vw, 100px); margin: 20px 0; }
 .visit-address { font: 500 18px/1.6 Manrope, sans-serif; color: var(--muted); margin-bottom: 40px; max-width: 400px; }
 .visit-map { background: var(--bg-light); border-left: 1px solid var(--neo-border); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -140,7 +147,8 @@ button { font: inherit; color: inherit; }
 .footer-bottom { border-top: 1px solid var(--neo-border); padding-top: 30px; display: flex; justify-content: space-between; align-items: center; font: 600 12px 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim); }
 .partners { display: flex; gap: 20px; align-items: center; }
 .partners span { color: var(--muted); }
-.partners b { color: var(--ink); font-size: 14px; }
+.partners a { color: var(--ink); font-size: 14px; font-weight: 700; transition: color .18s; }
+.partners a:hover { color: var(--clay); }
 
 .paddle-cursor { width: 44px; height: 44px; transform: rotate(-35deg); filter: drop-shadow(0 0 10px rgba(217, 96, 58, 0.5)); transition: transform .16s ease, filter .16s ease; }
 .paddle-cursor.is-hover { transform: rotate(-15deg) scale(1.2); filter: drop-shadow(0 0 15px rgba(232, 220, 200, 0.6)); }
@@ -173,6 +181,23 @@ button { font: inherit; color: inherit; }
   .footer-top { grid-template-columns: 1fr; gap: 40px; }
   .footer-bottom { flex-direction: column; gap: 20px; align-items: flex-start; }
 }
+
+/* Semantic classes for what used to be inline style objects in home.tsx.
+   The repo's convention is that styling lives here, driven by the tokens. */
+.section-heading { font-size: clamp(50px, 8vw, 100px); margin: 0; }
+.facilities-intro { text-align: center; }
+.facilities-heading { font-size: clamp(50px, 8vw, 90px); margin-top: 10px; margin-bottom: 20px; }
+.eyebrow-center { justify-content: center; }
+.sport-desc { color: var(--muted); font: 500 16px/1.5 Manrope, sans-serif; }
+.sport-offer-label { font: 700 12px 'Space Grotesk', sans-serif; color: var(--clay); text-transform: uppercase; margin-bottom: 4px; }
+.sport-cta { margin-top: 24px; width: 100%; }
+.benefit-desc { font: 500 13px/1.5 Manrope, sans-serif; color: var(--dim); margin-top: 8px; }
+.visit-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+.footer-desc { color: var(--dim); margin-top: 16px; font: 500 14px/1.6 Manrope, sans-serif; max-width: 300px; }
+.footer-social { color: var(--bone); }
+.footer-address { line-height: 1.6; }
+.footer-map-link { text-decoration: underline; color: var(--clay); margin-top: 8px; }
+.footer-bottom-legal { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
 
 /* ---------- 404 page ---------- */
 
@@ -420,7 +445,7 @@ button { font: inherit; color: inherit; }
 .home-page section:focus-visible, .home-page footer:focus-visible, .home-page:focus-visible { outline: 3px solid var(--bone); outline-offset: -3px; }
 .home-page .ticker { position: relative; margin-top: 0; margin-bottom: 0; box-shadow: none; transform: rotate(-1deg); }
 .home-page .ticker-inner { animation: tick 20s linear infinite; }
-.home-page #facilities { padding-top: 88px; padding-bottom: 88px; }
+.home-page #facilities { padding-top: var(--space-section-tight); padding-bottom: var(--space-section-tight); }
 .home-page .benefit-card { transition: none; }
 .home-page .benefit-card:hover { transform: none; }
 .home-page .mobile-menu { width: 44px; height: 44px; }
