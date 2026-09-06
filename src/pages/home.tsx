@@ -6,6 +6,12 @@ import { useMotionEnabled } from '@/lib/motion';
 import { ArrowRight, ChevronRight, Menu, Phone, X, MapPin, Instagram, Mail, Award, ShieldCheck, Trophy, Clock, Users, GraduationCap, Shirt, Coffee, Car, Lightbulb } from 'lucide-react';
 import { hasOpened, OPENING_LABEL } from '../lib/opening';
 
+// One source of truth for the venue location: the Get Directions buttons and
+// the QR code in the visit panel all resolve to this exact URL, so the printed
+// code can never drift from the links beside it.
+const MAPS_URL =
+  'https://maps.google.com/?q=Plot+No.+28,+VGN+Victoria+Park,+Enford+Street,+Ambattur,+Chennai';
+
 const benefits = [
   { icon: Award, title: 'Quality Courts', desc: 'Well-maintained playing experience' },
   { icon: GraduationCap, title: 'Coaching', desc: 'Learn, improve & elevate your game' },
@@ -105,7 +111,7 @@ export function Home() {
       <header ref={header} className="home-header shell" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setMenu(false); }}>
         <nav className="nav" aria-label="Main navigation" data-testid="navigation-main">
           <a href="#top" className="brand" data-testid="link-brand" onClick={(event) => nav(event, 'top')}>
-            <img src="/brand/gravik-logo-panel.webp" alt="GRAVIK Logo" />
+            <img src="/brand/gravik-logo-panel.webp" alt="GRAVIK Logo" width={610} height={265} fetchPriority="high" decoding="async" />
           </a>
 
           <div ref={navLinks} id="home-navigation-links" className={`nav-links ${menu ? 'open' : ''}`} inert={mobile && !menu}>
@@ -174,7 +180,7 @@ export function Home() {
         <Stagger className="sports-grid" data-home-reveal interval={0.08}>
           {/* Pickleball */}
           <StaggerItem as="article" data-home-reveal className="sport-card">
-            <img src="/brand/pickleball-action.webp" alt="Pickleball Action" className="sport-img" />
+            <img src="/brand/pickleball-action.webp" alt="Pickleball Action" className="sport-img" width={537} height={352} loading="lazy" decoding="async" />
             <div className="sport-content">
               <div className="sport-slogan">Rally. Smash. Repeat.</div>
               <h3 className="display sport-title">Pickleball</h3>
@@ -198,7 +204,7 @@ export function Home() {
 
           {/* Cricket Nets */}
           <StaggerItem as="article" data-home-reveal className="sport-card">
-            <img src="/brand/cricket-action.webp" alt="Cricket Net Action" className="sport-img" />
+            <img src="/brand/cricket-action.webp" alt="Cricket Net Action" className="sport-img" width={525} height={440} loading="lazy" decoding="async" />
             <div className="sport-content">
               <div className="sport-slogan">Focus. Practice. Perform.</div>
               <h3 className="display sport-title">Cricket Nets</h3>
@@ -231,7 +237,7 @@ export function Home() {
         <Reveal data-home-reveal distance={8} className="benefits-grid">
           {benefits.map((b) => (
             <div key={b.title} className="benefit-card">
-              <b.icon className="benefit-icon" size={40} />
+              <b.icon className="benefit-icon" />
               <div>
                 <h4 className="benefit-title">{b.title}</h4>
                 <p style={{ font: '500 13px/1.5 Manrope, sans-serif', color: 'var(--dim)', marginTop: 8 }}>{b.desc}</p>
@@ -250,7 +256,7 @@ export function Home() {
               Plot No. 28, VGN Victoria Park, Enford Street,<br/>Ambattur, Chennai – 600 053
             </p>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              <a href="https://maps.google.com/?q=Plot+No.+28,+VGN+Victoria+Park,+Enford+Street,+Ambattur,+Chennai" target="_blank" rel="noreferrer" className="button clay">
+              <a href={MAPS_URL} target="_blank" rel="noreferrer" className="button clay">
                 <MapPin size={16} /> Get Directions
               </a>
               <a href="tel:+919150293767" className="button">
@@ -260,18 +266,15 @@ export function Home() {
           </Reveal>
         </div>
         <div className="visit-map">
-          {/* We use the brand board image slightly visible as a placeholder map background for vibe */}
-          <img src="/brand/gravik-board.png" alt="Map Background" />
+          <img src="/brand/gravik-board.webp" alt="" aria-hidden="true" width={720} height={1019} loading="lazy" decoding="async" />
           <div className="map-overlay">
-            <div className="qr-code">
-              {/* Fake QR code visualization for the aesthetic */}
-              <div style={{ width: '100%', height: '100%', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
-                {Array.from({length: 16}).map((_, i) => (
-                  <div key={i} style={{ background: Math.random() > 0.3 ? '#000' : 'transparent', borderRadius: 2 }} />
-                ))}
-              </div>
-            </div>
-            <span className="mono" style={{ color: 'var(--ink)', fontSize: 14 }}>Scan for directions</span>
+            {/* A real, scannable code for MAPS_URL — pre-rendered at build time so
+                no QR library ships to the client. Also a link, so a desktop
+                visitor who cannot scan it still gets the directions. */}
+            <a className="qr-code" href={MAPS_URL} target="_blank" rel="noreferrer" aria-label="Open the GRAVIK location in Google Maps">
+              <img src="/brand/directions-qr.svg" alt="" width={200} height={200} loading="lazy" decoding="async" />
+            </a>
+            <span className="mono map-overlay-caption">Scan for directions</span>
           </div>
         </div>
       </section>
@@ -281,7 +284,7 @@ export function Home() {
           <div className="footer-top">
             <div>
               <div className="footer-brand">
-                <img src="/brand/gravik-logo-panel.webp" alt="GRAVIK" style={{ filter: 'grayscale(1) brightness(2)' }} />
+                <img src="/brand/gravik-logo-panel.webp" alt="GRAVIK" width={610} height={265} loading="lazy" decoding="async" />
               </div>
               <div className="footer-slogan">Play. Compete. Connect.</div>
               <p style={{ color: 'var(--dim)', marginTop: 16, font: '500 14px/1.6 Manrope, sans-serif', maxWidth: 300 }}>
@@ -303,14 +306,14 @@ export function Home() {
               <h4>Location</h4>
               <div className="footer-links">
                 <span style={{ lineHeight: 1.6 }}>Plot No. 28, VGN Victoria Park,<br/>Enford Street, Ambattur,<br/>Chennai – 600 053</span>
-                <a href="https://maps.google.com/?q=Plot+No.+28,+VGN+Victoria+Park,+Enford+Street,+Ambattur,+Chennai" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'var(--clay)', marginTop: 8 }}>Open in Maps</a>
+                <a href={MAPS_URL} target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'var(--clay)', marginTop: 8 }}>Open in Maps</a>
               </div>
             </div>
           </div>
 
           <div className="footer-bottom">
             <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-              <span>© 2026 GRAVIK. All rights reserved.</span>
+              <span>© {new Date().getFullYear()} GRAVIK. All rights reserved.</span>
               <Link href="/privacy" className="footer-legal-link">Privacy</Link>
               <Link href="/terms" className="footer-legal-link">Terms</Link>
             </div>

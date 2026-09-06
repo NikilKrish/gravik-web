@@ -40,7 +40,7 @@ pages).
 
 **Design system** — "Clay & Bone": `--bg #14120F`, `--bg-off #1C1915`,
 `--bg-light #24201A`, `--clay #D9603A`, `--bone #E8DCC8`, `--ink #F2ECE0`,
-`--muted #A89F8E`, `--dim #6E6659`. Type: Anton (display, weight 400 only),
+`--muted #A89F8E`, `--dim #A09583`. Type: Anton (display, weight 400 only),
 Space Grotesk (labels/buttons/nav — **weights 500/600/700 only, 800 is not loaded**),
 Manrope (body). Sharp corners throughout (near-zero border-radius) — deliberate
 neo-brutalist hard-shadow language, don't soften it. Breakpoints: 768px (nav/grid),
