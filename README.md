@@ -25,3 +25,22 @@ pnpm serve   # preview the production build
 
 - `/` — home page
 - `/book`, `/book?sport=pickleball`, `/book?sport=cricket` — booking flow
+
+## Deploy
+
+Hosted on Vercel. The project is linked to this repository, so **every push to
+`main` ships to production automatically** — there is no manual deploy step.
+
+| Setting | Value |
+|---|---|
+| Project | `gravik-play` (team: Yenkay's projects) |
+| Production branch | `main` |
+| Framework preset | Vite |
+| Build command | `pnpm build` |
+| Output directory | `dist` |
+
+`vercel.json` rewrites every path to `/index.html`. This is load-bearing: the
+app routes on real paths, so without it a direct visit or refresh on `/book`,
+`/privacy` or `/terms` returns a 404 from the CDN. Static files are matched
+before rewrites, so `/assets`, `/brand`, `/favicon.svg` and `/robots.txt` are
+unaffected. Do not remove it.
