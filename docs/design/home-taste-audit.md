@@ -59,8 +59,10 @@ Was sticky, flat and identical at the top of the page and two thousand pixels do
   primary conversion surface. Now lifts into a hard shadow with a 4% image scale.
 - **Price block**: aligned on box bottoms, so the 64px offer price sat visibly below
   the struck list price. Now `last baseline` with `line-height: 1`.
-- **Anton tracking**: `+.005em` reads loose on a condensed face at 60–140px. Display
-  sizes take `-.012em`; the small uppercase labels sharing `.display` are untouched.
+- **Anton tracking**: proposed `-.012em` on display sizes, on the grounds that
+  `+.005em` reads loose on a condensed face at 60–140px. **Implemented, then reverted
+  at the user's request** — `.display` keeps its original `.005em` and headings render
+  exactly as they did before this audit. Do not reapply it without asking.
 - **Rhythm**: `.section` 120 / `#facilities` 88 / `.visit-text` 100 were three
   unrelated scales; collapsed to two tokens.
 - Ticker pauses on hover/focus. Partner names are links. Copyright year derived.
@@ -99,6 +101,15 @@ Two findings did not survive verification and were dropped rather than softened:
 2. **Price baseline measurement.** The first probe reported a 2.8px delta, but it was
    measuring line-box bottoms rather than text baselines and was not trustworthy. The
    misalignment is real — it was confirmed by screenshot instead.
+
+## Reverted after review
+
+**Anton display tracking** (`-.012em`) was backed out at the user's request; see the
+Sections list above. Typography now matches the pre-audit site in every respect. The
+two things that still differ are deliberate and unrelated to typeface choice: the
+Google Fonts request moved from an `@import` in `index.css` to a `<link>` in
+`index.html` (byte-identical URL, load-order only), and `.sport-pricing .new-price`
+went from `line-height: .8` to `1` as half of the baseline-alignment fix.
 
 ## Verification performed
 
