@@ -1,9 +1,12 @@
 // Booking page container: owns all selection state and composes the
 // slots, review, and done steps.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearch } from 'wouter';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { AnimatedNumber } from '@/components/motion';
+import { useMotionEnabled } from '@/lib/motion';
+import { bookingEnter } from '@/components/booking/BookingMotion';
 import { ArrowLeft } from 'lucide-react';
 import { ReviewStep } from '../components/booking/ReviewStep';
 import { RequestSent } from '../components/booking/RequestSent';
@@ -25,7 +28,8 @@ function resolveSport(search: string): SportId {
 export default function Booking() {
   const search = useSearch();
   const initialSport = useMemo(() => resolveSport(search), [search]);
-  const reduce = useReducedMotion();
+  const enabled = useMotionEnabled();
+  const mainRef = useRef<HTMLElement>(null);
 
   const [sport, setSport] = useState<SportId>(initialSport);
   const [courtIndex, setCourtIndex] = useState(0);
@@ -47,6 +51,26 @@ export default function Booking() {
   // whenever there's nothing to review, so the step state stays consistent.
   const effectiveStep: Step = step !== 'slots' && picks.length === 0 ? 'slots' : step;
 
+  useLayoutEffect(() => {
+    mainRef.current?.querySelector('h1')?.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [effectiveStep]);
+
+  // A reduced-motion or hidden-page transition consumes any mounted micro
+  // entrances permanently. Newly keyed values can animate after restoration,
+  // while existing or interrupted content cannot restart its CSS timeline.
+  useEffect(() => {
+    const root = mainRef.current;
+    if (enabled || !root) return;
+    const selector = '.animated-number-digit, .booking-section-value > span, .booking-animated-row';
+    const consume = () => root.querySelectorAll<HTMLElement>(selector)
+      .forEach((element) => { element.dataset.motionConsumed = ''; });
+    consume();
+    const observer = new MutationObserver(consume);
+    observer.observe(root, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [enabled]);
+
   const selection: BookingSelection = {
     sport,
     courtIndex,
@@ -61,29 +85,29 @@ export default function Booking() {
     document.title = `Book a Court | ${sportData.name} | GRAVIK`;
   }, [sportData.name]);
 
-  const handleSportChange = (id: SportId) => {
+  const handleSportChange = useCallback((id: SportId) => {
     if (id === sport) return;
     setSport(id);
     setCourtIndex(0);
     setPicks([]);
     setAddonIds([]);
-  };
+  }, [sport]);
 
-  const handleDayChange = (index: number) => {
+  const handleDayChange = useCallback((index: number) => {
     if (index === dayIndex) return;
     setDayIndex(index);
     setPicks([]);
-  };
+  }, [dayIndex]);
 
-  const handleCourtChange = (index: number) => {
+  const handleCourtChange = useCallback((index: number) => {
     if (index === courtIndex) return;
     setCourtIndex(index);
     setPicks([]);
-  };
+  }, [courtIndex]);
 
-  const handleSlotToggle = (startMinutes: number) => {
+  const handleSlotToggle = useCallback((startMinutes: number) => {
     setPicks((prev) => toggleSlot(prev, startMinutes));
-  };
+  }, []);
 
   const handleAddonToggle = (id: string) => {
     setAddonIds((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]));
@@ -106,10 +130,15 @@ export default function Booking() {
 
   return (
     <main
+      ref={mainRef}
       id="main-content"
+      data-booking-step={effectiveStep}
       className={`shell booking-page${showMobileCta ? ' has-mobile-cta' : ''}`}
       data-testid="page-booking"
     >
+      <span className="motion-sr-only" role="status" aria-live="polite" aria-atomic="true">
+        Booking total {formatMoney(totals.total)}
+      </span>
       {effectiveStep !== 'done' ? (
         <div className="booking-back-row">
           <Link href="/" className="booking-back">
@@ -127,12 +156,10 @@ export default function Booking() {
         <>
           <motion.header
             className="booking-header"
-            initial={reduce ? false : { opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            {...bookingEnter(enabled)}
           >
             <div className="eyebrow">Book a court</div>
-            <h1 className="display booking-title">
+            <h1 tabIndex={-1} className="display booking-title">
               Pick your <span>slot.</span>
             </h1>
           </motion.header>
@@ -196,7 +223,7 @@ export default function Booking() {
         <div className="booking-mobile-cta">
           <div className="booking-mobile-cta-total">
             <span className="booking-mobile-cta-label">Total</span>
-            <span className="booking-mobile-cta-amount">{formatMoney(totals.total)}</span>
+            <span className="booking-mobile-cta-amount"><AnimatedNumber value={totals.total} format={formatMoney} /></span>
           </div>
           {effectiveStep === 'review' ? (
             <button type="button" className="button clay" onClick={handleSend}>

@@ -3,6 +3,8 @@
 // in the click handler passed as onSend, or popup blockers intercept it.
 
 import { MessageCircle } from 'lucide-react';
+import { AnimatedNumber } from '@/components/motion';
+import { BookingRow, BookingRows } from './BookingMotion';
 import { ADDONS } from '../../lib/booking/catalog';
 import { formatMoney } from '../../lib/booking/pricing';
 import type { Totals } from '../../lib/booking/types';
@@ -25,7 +27,7 @@ export function ReviewBill({ totals, addonIds, onSend }: ReviewBillProps) {
       <div className="summary-totals">
         <div className="summary-row">
           <span>Subtotal</span>
-          <span>{formatMoney(totals.slotTotal)}</span>
+          <AnimatedNumber value={totals.slotTotal} format={formatMoney} />
         </div>
         {totals.savings > 0 ? (
           <div className="summary-row savings">
@@ -34,15 +36,15 @@ export function ReviewBill({ totals, addonIds, onSend }: ReviewBillProps) {
             </span>
           </div>
         ) : null}
-        {selectedAddons.map((addon) => (
-          <div className="summary-row" key={addon.id}>
+        <BookingRows>{selectedAddons.map((addon) => (
+          <BookingRow className="summary-row" key={addon.id}>
             <span>{addon.name}</span>
             <span>{formatMoney(addon.price)}</span>
-          </div>
-        ))}
+          </BookingRow>
+        ))}</BookingRows>
         <div className="summary-row total">
           <span>Total</span>
-          <span>{formatMoney(totals.total)}</span>
+          <AnimatedNumber value={totals.total} format={formatMoney} />
         </div>
       </div>
 

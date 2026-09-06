@@ -2,6 +2,8 @@
 // continue CTA. No add-ons/players/review UI here — that lands next task.
 
 import { ArrowRight, ShieldCheck, X } from 'lucide-react';
+import { AnimatedNumber } from '@/components/motion';
+import { BookingRow, BookingRows } from './BookingMotion';
 import { formatMoney } from '../../lib/booking/pricing';
 import { formatFullDate, mergeSessions, toggleSlot } from '../../lib/booking/slots';
 import type { RailDay, Sport, Totals } from '../../lib/booking/types';
@@ -46,10 +48,9 @@ export function SummaryRail({
         {courtName} · {formatFullDate(day.date)}
       </div>
 
-      {hasPicks ? (
         <div className="summary-sessions">
-          {sessions.map((session) => (
-            <div className="summary-session" key={session.start}>
+          <BookingRows>{sessions.map((session) => (
+            <BookingRow className="summary-session" key={session.start}>
               <span className="summary-session-label">{session.label}</span>
               <button
                 type="button"
@@ -59,20 +60,19 @@ export function SummaryRail({
               >
                 <X size={14} />
               </button>
-            </div>
+            </BookingRow>
           ))}
+          {!hasPicks ? <BookingRow className="summary-empty" key="empty">
+            Nothing picked yet. Tap a time — consecutive slots merge into one session.
+          </BookingRow> : null}
+          </BookingRows>
         </div>
-      ) : (
-        <div className="summary-empty">
-          Nothing picked yet. Tap a time — consecutive slots merge into one session.
-        </div>
-      )}
 
       {hasPicks ? (
         <div className="summary-totals">
           <div className="summary-row">
             <span>Subtotal</span>
-            <span>{formatMoney(totals.slotTotal)}</span>
+            <AnimatedNumber value={totals.slotTotal} format={formatMoney} />
           </div>
           {totals.savings > 0 ? (
             <div className="summary-row savings">
@@ -83,7 +83,7 @@ export function SummaryRail({
           ) : null}
           <div className="summary-row total">
             <span>Total</span>
-            <span>{formatMoney(totals.total)}</span>
+            <AnimatedNumber value={totals.total} format={formatMoney} />
           </div>
         </div>
       ) : null}
@@ -98,7 +98,7 @@ export function SummaryRail({
       </button>
 
       <div className="summary-reassure">
-        <ShieldCheck size={16} strokeWidth={1.75} />
+        <ShieldCheck size={16} />
         <span>We'll confirm your slot on WhatsApp.</span>
       </div>
     </aside>

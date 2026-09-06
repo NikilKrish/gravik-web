@@ -1,5 +1,38 @@
 # GRAVIK — Memory (user, decisions, working style)
 
+## Active motion task memory — 6 September 2026
+
+The ongoing motion-choreography task lives in the isolated worktree
+`C:\Users\Nikil Krishnan\.codex\worktrees\gravik-motion` on branch
+`codex/motion-choreography`, based on `99b93ed`. The original checkout's product
+source remains unchanged; these resume documents are mirrored there. The user
+stopped the task after the final broad review because the
+GPT-5.6 Sol allowance was exhausted and asked for a clean new-session resume.
+Read `contexts.md` for the exact state and six remaining review findings.
+
+The user explicitly required the remaining work to use GPT-5.6 Sol with medium
+reasoning and explicitly chose the subagent-driven-development and scroll-craft
+skills. Preserve the existing implementation and evidence; continue from the
+final review findings rather than redoing completed phases.
+
+Motion-specific durable decisions:
+
+- Booking domain functions and WhatsApp request semantics are load-bearing and
+  remain authoritative. Motion may decorate their results but may not reproduce
+  session merging, prices, totals, or message construction in UI code.
+- Reduced motion is live, not a mount-time snapshot. Preference and visibility
+  changes must settle active motion and must not replay consumed entrances when
+  restored.
+- The summary rail stays spatially stable. Rows and digits may animate; the rail
+  itself must not move.
+- The request-sent state must continue to say the request awaits confirmation.
+- Touch performance takes priority over ornamental effects, but required
+  row/value/digit feedback cannot be disabled wholesale on full-motion touch
+  layouts. Simplify the implementation instead.
+- Headless throttled results are evidence with limits. Do not claim real-device
+  60 fps without a real-device run.
+- No commit or push has been authorized for this worktree.
+
 ## The user
 
 Nikil Krishnan (nikil.june25@gmail.com). Owns/runs GRAVIK, a pickleball + cricket

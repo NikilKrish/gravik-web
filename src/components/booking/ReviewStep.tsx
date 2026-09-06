@@ -3,7 +3,11 @@
 // backend — the CTA opens WhatsApp with a pre-filled request; nothing here
 // may imply payment has been taken or a court has been secured.
 
-import { motion, useReducedMotion } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { AnimatedNumber } from '@/components/motion';
+import { useMotionEnabled } from '@/lib/motion';
+import { bookingEnter, SectionHeading, SelectionGroup } from './BookingMotion';
 import { GraduationCap, Circle, Minus, Plus, Swords, type LucideIcon } from 'lucide-react';
 import { ADDONS } from '../../lib/booking/catalog';
 import { formatMoney } from '../../lib/booking/pricing';
@@ -51,16 +55,14 @@ export function ReviewStep({
   onSend,
 }: ReviewStepProps) {
   const sessions = mergeSessions(picks);
-  const reduce = useReducedMotion();
-  const fadeIn = (delay: number) => (reduce ? {} : {
-    initial: { opacity: 0, y: 16 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.4, delay },
-  });
+  const enabled = useMotionEnabled();
+  const [latestAddon, setLatestAddon] = useState<string>();
+  const activeAddon = latestAddon && addonIds.includes(latestAddon) ? latestAddon : addonIds.at(-1);
+  const fadeIn = (delay: number) => bookingEnter(enabled, delay);
 
   return (
     <>
-      <motion.h1 className="display booking-title review-title" {...fadeIn(0)}>
+      <motion.h1 tabIndex={-1} className="display booking-title review-title" {...fadeIn(0)}>
         Review your <span>request.</span>
       </motion.h1>
 
@@ -89,10 +91,8 @@ export function ReviewStep({
           </motion.section>
 
           <motion.section className="booking-section" {...fadeIn(0.13)}>
-            <div className="booking-section-head">
-              <h2 className="booking-section-title">Add-ons</h2>
-            </div>
-            <div className="addon-grid">
+            <SectionHeading title="Add-ons" value={addonIds.length ? `${addonIds.length} selected` : undefined} />
+            <SelectionGroup className="addon-grid" active={activeAddon} kind="addon">
               {ADDONS.map((addon) => {
                 const Icon = ADDON_ICONS[addon.icon];
                 const selected = addonIds.includes(addon.id);
@@ -101,11 +101,12 @@ export function ReviewStep({
                     key={addon.id}
                     type="button"
                     className="addon-pick"
+                    data-selection={addon.id}
                     aria-pressed={selected}
-                    onClick={() => onAddonToggle(addon.id)}
+                    onClick={() => { setLatestAddon(addon.id); onAddonToggle(addon.id); }}
                   >
                     <span className="addon-pick-icon-wrap">
-                      {Icon ? <Icon className="addon-pick-icon" strokeWidth={1.75} /> : null}
+                      {Icon ? <Icon className="addon-pick-icon" /> : null}
                     </span>
                     <span className="addon-pick-body">
                       <span className="addon-pick-name">{addon.name}</span>
@@ -115,38 +116,38 @@ export function ReviewStep({
                   </button>
                 );
               })}
-            </div>
+            </SelectionGroup>
           </motion.section>
 
           <motion.section className="booking-section" {...fadeIn(0.2)}>
-            <div className="booking-section-head">
-              <h2 className="booking-section-title">Payment preference</h2>
-            </div>
+            <SectionHeading title="Payment preference" value={payMode === 'full' ? 'In full' : '25% advance'} />
             <div className="review-note">Nothing is charged now — we'll confirm on WhatsApp.</div>
-            <div className="payment-grid">
+            <SelectionGroup className="payment-grid" active={payMode} kind="payment">
               <button
                 type="button"
                 className="payment-pick"
+                data-selection="full"
                 aria-pressed={payMode === 'full'}
                 onClick={() => onPayModeChange('full')}
               >
                 <span className="payment-pick-name">Pay in full</span>
-                <span className="payment-pick-amount">{formatMoney(totals.total)}</span>
+                <span className="payment-pick-amount"><AnimatedNumber value={totals.total} format={formatMoney} /></span>
                 <span className="payment-pick-note">Settle the full amount when you arrive.</span>
               </button>
               <button
                 type="button"
                 className="payment-pick"
+                data-selection="advance"
                 aria-pressed={payMode === 'advance'}
                 onClick={() => onPayModeChange('advance')}
               >
                 <span className="payment-pick-name">Pay 25% to reserve</span>
-                <span className="payment-pick-amount">{formatMoney(totals.advance)}</span>
+                <span className="payment-pick-amount"><AnimatedNumber value={totals.advance} format={formatMoney} /></span>
                 <span className="payment-pick-note">
                   Balance {formatMoney(totals.balance)} at the court.
                 </span>
               </button>
-            </div>
+            </SelectionGroup>
           </motion.section>
 
           <motion.section className="booking-section" {...fadeIn(0.27)}>
@@ -163,7 +164,7 @@ export function ReviewStep({
               >
                 <Minus size={16} />
               </button>
-              <span className="stepper-value">{players}</span>
+              <span className="stepper-value"><AnimatedNumber value={players} /></span>
               <button
                 type="button"
                 className="stepper-btn"
@@ -178,9 +179,7 @@ export function ReviewStep({
           </motion.section>
         </div>
 
-        <motion.div {...fadeIn(0.1)}>
-          <ReviewBill totals={totals} addonIds={addonIds} onSend={onSend} />
-        </motion.div>
+        <ReviewBill totals={totals} addonIds={addonIds} onSend={onSend} />
       </div>
     </>
   );

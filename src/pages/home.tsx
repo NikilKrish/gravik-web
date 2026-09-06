@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type FocusEvent, type MouseEvent } from 'react';
 import { Link } from 'wouter';
-import { motion, useReducedMotion } from 'framer-motion';
+import { MaskedText, Reveal, Stagger, StaggerItem } from '@/components/motion';
+import { CourtField } from '@/components/motion/CourtField';
+import { useMotionEnabled } from '@/lib/motion';
 import { ArrowRight, ChevronRight, Menu, Phone, X, MapPin, Instagram, Mail, Award, ShieldCheck, Trophy, Clock, Users, GraduationCap, Shirt, Coffee, Car, Lightbulb } from 'lucide-react';
 import { hasOpened, OPENING_LABEL } from '../lib/opening';
 
@@ -19,7 +21,11 @@ const benefits = [
 
 export function Home() {
   const [menu, setMenu] = useState(false);
-  const reduce = useReducedMotion();
+  const enabled = useMotionEnabled();
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const header = useRef<HTMLElement>(null);
+  const navLinks = useRef<HTMLDivElement>(null);
+  const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 768px)').matches);
   const opened = hasOpened();
 
   useEffect(() => {
@@ -28,91 +34,146 @@ export function Home() {
     if (meta) meta.setAttribute('content', 'Chennai\'s new destination for pickleball and cricket practice. Open daily.');
   }, []);
 
-  const nav = (id: string) => {
+  useEffect(() => {
+    const breakpoint = window.matchMedia('(max-width: 768px)');
+    const update = () => {
+      setMobile(breakpoint.matches);
+      setMenu(false);
+      // Move focus out of the disclosure if it becomes hidden at the breakpoint.
+      if (breakpoint.matches && navLinks.current?.contains(document.activeElement)) menuButton.current?.focus();
+      if (!breakpoint.matches && document.activeElement === menuButton.current) navLinks.current?.querySelector<HTMLAnchorElement>('a')?.focus();
+    };
+    breakpoint.addEventListener('change', update);
+    return () => breakpoint.removeEventListener('change', update);
+  }, []);
+
+  useEffect(() => {
+    if (!menu || !mobile) return;
+    navLinks.current?.querySelector<HTMLAnchorElement>('a')?.focus();
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setMenu(false);
+      menuButton.current?.focus();
+    };
+    const outside = (event: PointerEvent) => {
+      if (!header.current?.contains(event.target as Node)) setMenu(false);
+    };
+    document.addEventListener('keydown', escape);
+    document.addEventListener('pointerdown', outside);
+    return () => {
+      document.removeEventListener('keydown', escape);
+      document.removeEventListener('pointerdown', outside);
+    };
+  }, [menu, mobile]);
+
+  useEffect(() => {
+    let frame = 0;
+    const settleHash = () => {
+      const target = document.getElementById(window.location.hash.slice(1));
+      if (!target) return;
+      target.dataset.motionSettled = 'true';
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => target.scrollIntoView({ behavior: 'instant', block: 'start' }));
+    };
+    settleHash();
+    window.addEventListener('hashchange', settleHash);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('hashchange', settleHash);
+    };
+  }, []);
+
+  const nav = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    event.preventDefault();
     setMenu(false);
-    window.requestAnimationFrame(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-    });
+    const target = document.getElementById(id);
+    if (!target) return;
+    target.dataset.motionSettled = 'true';
+    if (window.location.hash !== `#${id}`) window.history.pushState(null, '', `#${id}`);
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: enabled ? 'smooth' : 'instant', block: 'start' });
   };
 
-  const reveal = {
-    initial: { opacity: 0, y: 24 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.2 },
-    transition: { duration: 0.5 }
+  const settleFocus = (event: FocusEvent<HTMLElement>) => {
+    const section = event.target.closest<HTMLElement>('section, footer');
+    if (section) section.dataset.motionSettled = 'true';
   };
 
   return (
-    <main id="main-content" data-testid="page-home">
-      <header className="shell sticky top-0 z-50 bg-[#14120F]/92 backdrop-blur-md">
-        <nav className="nav" data-testid="navigation-main">
-          <a href="#top" className="brand" data-testid="link-brand" onClick={() => setMenu(false)}>
+    <main id="main-content" className="home-page" tabIndex={-1} data-testid="page-home" onFocusCapture={settleFocus}>
+      <header ref={header} className="home-header shell" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setMenu(false); }}>
+        <nav className="nav" aria-label="Main navigation" data-testid="navigation-main">
+          <a href="#top" className="brand" data-testid="link-brand" onClick={(event) => nav(event, 'top')}>
             <img src="/brand/gravik-logo-panel.webp" alt="GRAVIK Logo" />
           </a>
 
-          <div className={`nav-links ${menu ? 'open' : ''}`}>
-            <a href="#sports" data-testid="link-sports" onClick={() => setMenu(false)}>Sports</a>
-            <a href="#facilities" data-testid="link-facilities" onClick={() => setMenu(false)}>Facilities</a>
-            <a href="#visit" data-testid="link-visit" onClick={() => setMenu(false)}>Location</a>
-            <a href="#contact" data-testid="link-contact" onClick={() => setMenu(false)}>Contact</a>
+          <div ref={navLinks} id="home-navigation-links" className={`nav-links ${menu ? 'open' : ''}`} inert={mobile && !menu}>
+            <a href="#sports" data-testid="link-sports" onClick={(event) => nav(event, 'sports')}>Sports</a>
+            <a href="#facilities" data-testid="link-facilities" onClick={(event) => nav(event, 'facilities')}>Facilities</a>
+            <a href="#visit" data-testid="link-visit" onClick={(event) => nav(event, 'visit')}>Location</a>
+            <a href="#contact" data-testid="link-contact" onClick={(event) => nav(event, 'contact')}>Contact</a>
           </div>
 
           <div className="nav-tools">
             <Link className="button clay" href="/book" data-testid="link-book-now">
               Book Court <ArrowRight size={14} />
             </Link>
-            <button className="icon-button mobile-menu" aria-label="Open menu" data-testid="button-mobile-menu" onClick={() => setMenu(!menu)}>
+            <button ref={menuButton} type="button" className="icon-button mobile-menu" aria-label={menu ? 'Close menu' : 'Open menu'} aria-expanded={menu} aria-controls="home-navigation-links" data-testid="button-mobile-menu" onClick={() => setMenu(!menu)}>
               {menu ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </nav>
       </header>
 
-      <section id="top" className="shell hero">
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="hero-tagline">
-            <span /> {opened ? 'Now open · Open daily' : `Opening ${OPENING_LABEL}`} <span />
+      <section id="top" className="shell hero" tabIndex={-1}>
+        <CourtField />
+        <div className="hero-copy">
+          <div>
+            <div className="hero-tagline">
+              <span /> {opened ? 'Now open · Open daily' : `Opening ${OPENING_LABEL}`} <span />
+            </div>
           </div>
-        </motion.div>
 
-        <motion.h1 className="display" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
-          Play. Compete.<br /><span>Connect.</span>
-        </motion.h1>
+          <h1 className="display">
+            <MaskedText>Play. Compete.</MaskedText><br /><MaskedText><span className="hero-accent">Connect.</span></MaskedText>
+          </h1>
 
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <p className="hero-sub">
-            Chennai's new destination for <span className="bone-text">Pickleball</span> and <span className="bone-text">Cricket Practice</span>. Equipped. Ready when you are.
-          </p>
-          <div className="hero-actions">
-            <Link className="button clay" href="/book" data-testid="link-hero-book">
-              Book Your Court Today <ArrowRight size={14} />
-            </Link>
-            <a className="button" href="#sports" onClick={() => nav('sports')}>
-              Explore Sports <ChevronRight size={14} />
-            </a>
+          <div>
+            <p className="hero-sub">
+              Chennai's new destination for <span className="bone-text">Pickleball</span> and <span className="bone-text">Cricket Practice</span>. Equipped. Ready when you are.
+            </p>
+            <div className="hero-actions">
+              <Link className="button clay" href="/book" data-testid="link-hero-book">
+                Book Your Court Today <ArrowRight size={14} />
+              </Link>
+              <a className="button" href="#sports" onClick={(event) => nav(event, 'sports')}>
+                Explore Sports <ChevronRight size={14} />
+              </a>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       <div className="ticker" aria-label="brand highlights">
         <div className="ticker-inner">
           {Array.from({ length: 4 }, (_, i) => (
-            <span key={i}>
+            <span key={i} aria-hidden={i > 0 ? true : undefined}>
               RALLY. SMASH. REPEAT. <b>•</b> FOCUS. PRACTICE. PERFORM. <b>•</b> OPEN DAILY <b>•</b>
             </span>
           ))}
         </div>
       </div>
 
-      <section id="sports" className="section shell">
-        <motion.div {...reveal}>
+      <section id="sports" className="section shell" tabIndex={-1}>
+        <Reveal data-home-reveal distance={32}>
           <div className="eyebrow">Choose your game</div>
           <h2 className="display" style={{ fontSize: 'clamp(50px, 8vw, 100px)', margin: 0 }}>Train Hard.<br/>Play Smart.</h2>
-        </motion.div>
+        </Reveal>
 
-        <div className="sports-grid">
+        <Stagger className="sports-grid" data-home-reveal interval={0.08}>
           {/* Pickleball */}
-          <motion.article {...reveal} transition={{ delay: 0.1 }} className="sport-card">
+          <StaggerItem as="article" data-home-reveal className="sport-card">
             <img src="/brand/pickleball-action.webp" alt="Pickleball Action" className="sport-img" />
             <div className="sport-content">
               <div className="sport-slogan">Rally. Smash. Repeat.</div>
@@ -133,10 +194,10 @@ export function Home() {
                 Check availability <ArrowRight size={14} />
               </Link>
             </div>
-          </motion.article>
+          </StaggerItem>
 
           {/* Cricket Nets */}
-          <motion.article {...reveal} transition={{ delay: 0.2 }} className="sport-card">
+          <StaggerItem as="article" data-home-reveal className="sport-card">
             <img src="/brand/cricket-action.webp" alt="Cricket Net Action" className="sport-img" />
             <div className="sport-content">
               <div className="sport-slogan">Focus. Practice. Perform.</div>
@@ -146,10 +207,10 @@ export function Home() {
               <div className="sport-pricing">
                 <div>
                   <div style={{ font: '700 12px \'Space Grotesk\', sans-serif', color: 'var(--clay)', textTransform: 'uppercase', marginBottom: 4 }}>*Limited Time Offer</div>
-                  <span className="old-price">45 MINS</span>
+                  <span className="old-price">₹750</span>
                 </div>
                 <div>
-                  <span className="new-price">₹500</span><span className="unit">/ 1 hr</span>
+                  <span className="new-price">₹500</span><span className="unit">/ hr</span>
                 </div>
               </div>
 
@@ -157,32 +218,32 @@ export function Home() {
                 Check availability <ArrowRight size={14} />
               </Link>
             </div>
-          </motion.article>
-        </div>
+          </StaggerItem>
+        </Stagger>
       </section>
 
-      <section id="facilities" className="section shell">
-        <motion.div {...reveal} style={{ textAlign: 'center' }}>
+      <section id="facilities" className="section shell" tabIndex={-1}>
+        <Reveal data-home-reveal distance={8} style={{ textAlign: 'center' }}>
           <div className="eyebrow" style={{ justifyContent: 'center' }}>Premium Experience</div>
           <h2 className="display" style={{ fontSize: 'clamp(50px, 8vw, 90px)', margin: '10px 0 20px' }}>Built for the players</h2>
-        </motion.div>
+        </Reveal>
 
-        <div className="benefits-grid">
-          {benefits.map((b, i) => (
-            <motion.div key={b.title} className="benefit-card" {...reveal} transition={{ delay: i * 0.05 }}>
+        <Reveal data-home-reveal distance={8} className="benefits-grid">
+          {benefits.map((b) => (
+            <div key={b.title} className="benefit-card">
               <b.icon className="benefit-icon" size={40} />
               <div>
                 <h4 className="benefit-title">{b.title}</h4>
                 <p style={{ font: '500 13px/1.5 Manrope, sans-serif', color: 'var(--dim)', marginTop: 8 }}>{b.desc}</p>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </div>
+        </Reveal>
       </section>
 
-      <section id="visit" className="visit">
+      <section id="visit" className="visit" tabIndex={-1}>
         <div className="visit-text">
-          <motion.div {...reveal}>
+          <Reveal data-home-reveal distance={12}>
             <div className="eyebrow">Find your court</div>
             <h2 className="display visit-title">See you on<br/>the court!</h2>
             <p className="visit-address">
@@ -196,7 +257,7 @@ export function Home() {
                 <Phone size={16} /> Call Us
               </a>
             </div>
-          </motion.div>
+          </Reveal>
         </div>
         <div className="visit-map">
           {/* We use the brand board image slightly visible as a placeholder map background for vibe */}
@@ -215,7 +276,7 @@ export function Home() {
         </div>
       </section>
 
-      <footer id="contact" className="footer">
+      <footer id="contact" className="footer" tabIndex={-1}>
         <div className="shell">
           <div className="footer-top">
             <div>

@@ -1,14 +1,35 @@
 # GRAVIK — Operating Instructions
 
-Concrete, actionable rules for working in this repo. Read `context.md` (what exists)
+Concrete, actionable rules for working in this repo. Read `contexts.md` (what exists)
 and `memory.md` (why it's built this way) first — this file is *how* to work here.
 
 ## First thing to do in a new session
 
-The working tree has uncommitted changes (see `context.md` → "Current uncommitted
-state"). Before touching any of those files further, run `git status` and confirm
-that's still accurate — if it is, **ask the user whether to commit+push it** before
-starting new work, rather than assuming either way.
+The active motion task is in
+`C:\Users\Nikil Krishnan\.codex\worktrees\gravik-motion`, not the original
+checkout. Read `contexts.md`, run `git status`, and confirm the branch is
+`codex/motion-choreography` at baseline `99b93ed` with the documented uncommitted
+changes. When the user asks to resume, continue the six open final-review fixes
+without asking to commit first. Ask before committing or pushing only after the
+implementation and independent rereview are clean.
+
+Use the explicitly requested `superpowers:subagent-driven-development` and
+`nateherk-design:scroll-craft` workflows. Any new implementer or reviewer for the
+remaining task must use GPT-5.6 Sol with medium reasoning, as requested by the
+user. Do not resume before the user starts the new session/task.
+
+## Resume checklist for the active motion task
+
+1. Work only in the motion worktree and preserve all uncommitted project changes.
+2. Read `.superpowers/sdd/motion-plan/progress.md` and `final-review.md`.
+3. Fix the six findings recorded in `contexts.md`; do not restart phases 1–4.
+4. Keep booking rules in `src/lib/booking/` and preserve request/confirmation copy.
+5. Rebuild a fresh production preview and rerun the full acceptance matrix plus
+   targeted daypart, row-exit, mask, live-region, reduced-motion, and performance
+   checks.
+6. Regenerate the SDD diff packages and obtain a GPT-5.6 Sol medium whole-branch
+   PASS before calling the work complete.
+7. Do not commit or push without explicit user authorization.
 
 ## Commands
 

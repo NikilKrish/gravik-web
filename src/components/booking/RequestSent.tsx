@@ -2,7 +2,9 @@
 // booking is confirmed. Nothing here may claim payment or a secured court —
 // a human at GRAVIK still has to confirm on WhatsApp.
 
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useMotionEnabled } from '@/lib/motion';
+import { bookingEnter } from './BookingMotion';
 import { Check } from 'lucide-react';
 import { Link } from 'wouter';
 import { ADDONS } from '../../lib/booking/catalog';
@@ -38,25 +40,22 @@ export function RequestSent({
   const selectedAddons = addonIds
     .map((id) => ADDONS.find((a) => a.id === id))
     .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
-  const reduce = useReducedMotion();
-  const fadeIn = (delay: number) => (reduce ? {} : {
-    initial: { opacity: 0, y: 14 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.4, delay },
-  });
+  const enabled = useMotionEnabled();
+  const fadeIn = (delay: number) => bookingEnter(enabled, delay);
 
   return (
     <div className="request-sent">
       <motion.div
         className="request-sent-icon"
-        initial={reduce ? false : { opacity: 0, scale: 0.6 }}
+        initial={enabled ? { opacity: 0, scale: 0.8 } : false}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.45, ease: 'easeOut' }}
+        transition={enabled ? { duration: 0.45, ease: 'easeOut' } : { duration: 0 }}
+        style={!enabled ? { opacity: 1, transform: 'none' } : undefined}
       >
-        <Check size={28} strokeWidth={2.25} />
+        <Check size={28} />
       </motion.div>
       <motion.div className="eyebrow request-sent-eyebrow" {...fadeIn(0.12)}>Request sent</motion.div>
-      <motion.h1 className="display booking-title request-sent-title" {...fadeIn(0.18)}>
+      <motion.h1 tabIndex={-1} className="display booking-title request-sent-title" {...fadeIn(0.18)}>
         Almost <span>there.</span>
       </motion.h1>
       <motion.p className="request-sent-body" {...fadeIn(0.24)}>

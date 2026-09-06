@@ -1,7 +1,5 @@
-import { useEffect, useState, type CSSProperties } from 'react';
-
-type CursorPoint = { x: number; y: number };
-type BurstBall = CursorPoint & { id: number; dx: string; dy: string };
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useMotionEnabled } from '@/lib/motion';
 
 function PaddleIcon() {
   return (
@@ -15,51 +13,77 @@ function PaddleIcon() {
 }
 
 export function PaddleCursor() {
-  const [position, setPosition] = useState<CursorPoint>({ x: -80, y: -80 });
-  const [hover, setHover] = useState(false);
-  const [clicking, setClicking] = useState(false);
-  const [balls, setBalls] = useState<BurstBall[]>([]);
-  const [enabled, setEnabled] = useState(false);
+  const motionEnabled = useMotionEnabled();
+  const [finePointer, setFinePointer] = useState(false);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const enabled = motionEnabled && finePointer;
 
   useEffect(() => {
     const media = window.matchMedia('(pointer: fine) and (min-width: 769px)');
-    const updateEnabled = () => setEnabled(media.matches);
-    updateEnabled();
-    media.addEventListener('change', updateEnabled);
-    return () => media.removeEventListener('change', updateEnabled);
+    const update = () => setFinePointer(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
   }, []);
 
   useEffect(() => {
     if (!enabled) return;
-    let timer = 0;
-    const move = (event: MouseEvent) => setPosition({ x: event.clientX, y: event.clientY });
-    const over = (event: MouseEvent) => setHover(Boolean((event.target as Element | null)?.closest('a, button, [data-cursor], .cursor-pointer')));
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+    const root = document.documentElement;
+    const timers = new Set<number>();
+    let frame = 0;
+    let x = -80;
+    let y = -80;
+    const renderPosition = () => {
+      frame = 0;
+      cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+    };
+    const move = (event: PointerEvent) => {
+      x = event.clientX;
+      y = event.clientY;
+      if (!frame) frame = requestAnimationFrame(renderPosition);
+    };
+    const over = (event: PointerEvent) => {
+      cursor.firstElementChild?.classList.toggle('is-hover', Boolean((event.target as Element | null)?.closest('a, button, [data-cursor], .cursor-pointer')));
+    };
+    const later = (callback: () => void, delay: number) => {
+      const timer = window.setTimeout(() => { timers.delete(timer); callback(); }, delay);
+      timers.add(timer);
+    };
     const click = (event: MouseEvent) => {
-      setClicking(true);
-      window.clearTimeout(timer);
-      timer = window.setTimeout(() => setClicking(false), 200);
-      const newBalls = Array.from({ length: 3 + Math.floor(Math.random() * 3) }, (_, index) => {
+      if (event.detail === 0) return;
+      cursor.firstElementChild?.classList.add('is-clicking');
+      later(() => cursor.firstElementChild?.classList.remove('is-clicking'), 200);
+      const count = 3 + Math.floor(Math.random() * 3);
+      Array.from({ length: count }, (_, index) => {
         const angle = (Math.PI * 2 * index) / 5 + Math.random() * .55;
         const distance = 28 + Math.random() * 42;
-        return { id: Date.now() + index, x: event.clientX - 5, y: event.clientY - 5, dx: `${Math.cos(angle) * distance}px`, dy: `${Math.sin(angle) * distance}px` };
+        const ball = document.createElement('span');
+        ball.className = 'cursor-ball';
+        Object.assign(ball.style, {
+          left: `${event.clientX - 5}px`, top: `${event.clientY - 5}px`,
+          '--burst-x': `${Math.cos(angle) * distance}px`, '--burst-y': `${Math.sin(angle) * distance}px`,
+        } as CSSProperties);
+        document.body.appendChild(ball);
+        later(() => ball.remove(), 650);
       });
-      setBalls((current) => [...current, ...newBalls]);
-      window.setTimeout(() => setBalls((current) => current.filter((ball) => !newBalls.some((newBall) => newBall.id === ball.id))), 650);
     };
-    window.addEventListener('mousemove', move);
-    document.addEventListener('mouseover', over);
+    root.dataset.paddleActive = '';
+    window.addEventListener('pointermove', move, { passive: true });
+    document.addEventListener('pointerover', over, { passive: true });
     window.addEventListener('click', click);
     return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener('mousemove', move);
-      document.removeEventListener('mouseover', over);
+      delete root.dataset.paddleActive;
+      cancelAnimationFrame(frame);
+      timers.forEach((timer) => window.clearTimeout(timer));
+      document.querySelectorAll('.cursor-ball').forEach((ball) => ball.remove());
+      window.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerover', over);
       window.removeEventListener('click', click);
     };
   }, [enabled]);
 
   if (!enabled) return null;
-  return <>
-    <div className={`paddle-cursor${hover ? ' is-hover' : ''}${clicking ? ' is-clicking' : ''}`} style={{ left: position.x, top: position.y }}><PaddleIcon /></div>
-    {balls.map((ball) => <span className="cursor-ball" key={ball.id} style={{ left: ball.x, top: ball.y, '--burst-x': ball.dx, '--burst-y': ball.dy } as CSSProperties} />)}
-  </>;
+  return <div ref={cursorRef} className="paddle-position"><div className="paddle-cursor"><PaddleIcon /></div></div>;
 }
